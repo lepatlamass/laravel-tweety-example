@@ -1,14 +1,18 @@
 
     <div class="flex p-4 border-b border-gray-400">
         <div class="mr-2 flex-shrink-0">
-            <img src="https://i.pravatar.cc/50" alt="" class="rounded-full mr-3">
+            <a href="{{ route('profile', $tweet->user )}}">
+                <img src="{{ $tweet->user->avatar}} " width="50" height="50" alt="" class="rounded-full mr-3" >
+            </a>
 
         </div>
         <div >
-            <h5 class="font-bold mb-4">John Doe</h5>
+            <a href="{{ route('profile', $tweet->user) }}">
+                <h5 class="font-bold mb-3">{{ $tweet->user->name }}</h5>
+            </a>
 
             <p class="text-sm">
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad atque dignissimos doloribus eum, id illo impedit, in iusto laborum maiores nemo non odio quas quo recusandae, sequi sint voluptate voluptatibus.
+                {{ $tweet -> body }}
             </p>
         </div>
     </div>

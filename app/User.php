@@ -36,4 +36,38 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+   public function getAvatarAttribute()
+   {
+       return "https://i.pravatar.cc/200?u" .$this->email;
+   }
+//getting latest post from users
+    public function timeline() {
+       //include all the users tweets and the one he follows in descending oders
+
+        $friends = $this->follows()->pluck('id');
+
+        return Tweet::whereIn('user_id', $friends)
+            ->orWhere('user_id', $this->id)
+            ->latest()->get();
+    }
+//shwoing only his tweets
+    public function tweets() {
+       return $this->hasMany(Tweet::class);
+    }
+
+    //following users
+    public function follow(User $user)
+    {
+        return $this->follows()->save($user);
+    }
+
+    public function  follows() {
+       return $this->belongsToMany(User::class, 'follows','user_id','following_user_id');
+    }
+
+    public function getRouteKeyName()
+    {
+    return 'name';
+    }
 }
