@@ -8,16 +8,14 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use Notifiable;
+    use Notifiable, Followable;
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $fillable = [
-        'name', 'email', 'password',
-    ];
+    protected $guarded = [];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -37,9 +35,16 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-   public function getAvatarAttribute()
+    //$user->password
+    public function setPasswordAttribute($value)
+    {
+        $this->attributes['password'] = bcrypt($value);
+    }
+
+   public function getAvatarAttribute($value)
    {
-       return "https://i.pravatar.cc/200?u" .$this->email;
+       //changes done in the config/filesystem so that the storage link should be link with the path
+       return asset($value ?: '/image/default-avatar.png');
    }
 //getting latest post from users
     public function timeline() {
@@ -49,25 +54,17 @@ class User extends Authenticatable
 
         return Tweet::whereIn('user_id', $friends)
             ->orWhere('user_id', $this->id)
-            ->latest()->get();
+            ->latest()->paginate(50);
     }
-//shwoing only his tweets
+    //shwoing only his tweets
     public function tweets() {
-       return $this->hasMany(Tweet::class);
+       return $this->hasMany(Tweet::class)->latest();
     }
 
-    //following users
-    public function follow(User $user)
+    public function path($append = '')
     {
-        return $this->follows()->save($user);
-    }
+        $path = route('profile', $this->username);
 
-    public function  follows() {
-       return $this->belongsToMany(User::class, 'follows','user_id','following_user_id');
-    }
-
-    public function getRouteKeyName()
-    {
-    return 'name';
+        return $append ? "{$path}/{$append}" : $path;
     }
 }

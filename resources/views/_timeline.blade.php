@@ -1,5 +1,10 @@
 <div class="border border-gray-400 rounded-lg">
-    @foreach($tweets as $tweet )
+    @forelse($tweets as $tweet )
         @include('_tweet')
-    @endforeach
+    @empty
+        <P class="p-4"> No tweets yet</P>
+    @endforelse
+
+    {{ $tweets->links() }}
+
 </div>
